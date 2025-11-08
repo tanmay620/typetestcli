@@ -57,6 +57,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
+			m = initialModel()
 			return m, tea.Quit
 		case "backspace":
 			if len(m.userInput) > 0 {
@@ -65,6 +66,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.cursorPos--
 				}
 			}
+		case "ctrl+r":
+			m = m.restart_func()
 		default:
 			if !m.done && !m.typing {
 				m.startedAt = time.Now()
@@ -112,6 +115,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m model) restart_func() model {
+	width := m.width
+	height := m.height
+	rm := initialModel()
+	rm.width = width
+	rm.height = height
+	return rm
+}
+
 func tick() tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg {
 		return tickMsg{}
@@ -145,9 +157,9 @@ func (m model) View() string {
 
 	text_warp := lipgloss.NewStyle().Width(m.width - 4)
 
-	if m.width == 0 || m.height == 0 {
-		return "Loading…"
-	}
+	// if m.width == 0 || m.height == 0 {
+	// 	return "Loading…"
+	// }
 
 	var quote strings.Builder
 	for i, r := range m.promptArray {
@@ -179,6 +191,7 @@ func (m model) View() string {
 	} else if m.done {
 		s += fmt.Sprintf("\nTest Finished")
 		s += fmt.Sprintf("\n Your Result is %v WPM", m.wpm)
+		s += fmt.Sprintf("\n To restart press \"ctrl+r\"")
 	}
 	return fullscreenStyle.Render(style_border.Render(s))
 }
