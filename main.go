@@ -133,9 +133,9 @@ func tick() tea.Cmd {
 func (m model) View() string {
 
 	var (
-		correctStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFFFF"))
-		wrongStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF5555"))
-		pendingStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
+		correctStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffffff"))
+		wrongStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#F7768E"))
+		pendingStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#565F89"))
 	)
 
 	var style_header = lipgloss.NewStyle().
@@ -143,8 +143,8 @@ func (m model) View() string {
 		BorderStyle(lipgloss.NormalBorder()).
 		Bold(true).
 		Align(lipgloss.Center, lipgloss.Center).
-		Foreground(lipgloss.Color("#FAFAFA")).
-		Background(lipgloss.Color("#331886ff"))
+		Foreground(lipgloss.Color("#ffffff")).
+		Background(lipgloss.Color("#24283B"))
 
 	var align_center = lipgloss.NewStyle().
 		Width(m.width-4).
@@ -190,7 +190,7 @@ func (m model) View() string {
 		s += fmt.Sprintf("\n %v time left", m.duration)
 	} else if m.done {
 		s += "\nTest Finished"
-		s += fmt.Sprintf("\n Your Result is %v WPM", m.wpm)
+		s += wpmStyle.Render(fmt.Sprintf("\n Your Result is %v WPM", m.wpm))
 		s += "\n To restart press \"ctrl+r\""
 	}
 	return fullscreenStyle.Render(style_border.Render(s))
@@ -217,6 +217,8 @@ func calculateWPM(currentCount int, duration int, elapsed time.Duration) float64
 
 // styles
 
-var style_border = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder())
+var style_border = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("#414868"))
 
 var cursor_style = lipgloss.NewStyle().Bold(true)
+
+var wpmStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#7DCFFF")).Bold(true)
