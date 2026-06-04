@@ -189,17 +189,20 @@ func (m model) View() string {
 		s += fmt.Sprintf("\n current user input count %v", m.currentCount)
 		s += fmt.Sprintf("\n %v time left", m.duration)
 	} else if m.done {
-		s += fmt.Sprintf("\nTest Finished")
+		s += "\nTest Finished"
 		s += fmt.Sprintf("\n Your Result is %v WPM", m.wpm)
-		s += fmt.Sprintf("\n To restart press \"ctrl+r\"")
+		s += "\n To restart press \"ctrl+r\""
 	}
 	return fullscreenStyle.Render(style_border.Render(s))
 }
 
 func main() {
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(
+		initialModel(),
+		tea.WithAltScreen(),
+	)
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("error: %v", err)
 		os.Exit(1)
 	}
 }
