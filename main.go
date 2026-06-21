@@ -22,7 +22,7 @@ type Theme struct {
 
 var themes = []Theme{
 	{
-		Name:        "Tokyo Night (Dark & Moodish)",
+		Name:        "Tokyo Night",
 		Correct:     "#9ece6a",
 		Wrong:       "#f7768e",
 		Pending:     "#565f89",
@@ -31,7 +31,7 @@ var themes = []Theme{
 		BorderColor: "#414868",
 	},
 	{
-		Name:        "Cyberpunk 2077 (Neon High-Contrast)",
+		Name:        "Cyberpunk 2077",
 		Correct:     "#00f0ff",
 		Wrong:       "#ff0055",
 		Pending:     "#5a5a00",
@@ -40,7 +40,7 @@ var themes = []Theme{
 		BorderColor: "#fcee0a",
 	},
 	{
-		Name:        "Matrix (Digital Terminal Minimalist)",
+		Name:        "Matrix",
 		Correct:     "#00ff00",
 		Wrong:       "#ff0000",
 		Pending:     "#003300",
@@ -49,7 +49,7 @@ var themes = []Theme{
 		BorderColor: "#00ff00",
 	},
 	{
-		Name:        "Gruvbox Retro (Warm, Earthy & Sepia)",
+		Name:        "Gruvbox Retro",
 		Correct:     "#b8bb26",
 		Wrong:       "#fb4934",
 		Pending:     "#928374",
@@ -58,7 +58,7 @@ var themes = []Theme{
 		BorderColor: "#7c6f64",
 	},
 	{
-		Name:        "Paperback (Crisp Light Mode)",
+		Name:        "Paperback",
 		Correct:     "#22863a",
 		Wrong:       "#cb2431",
 		Pending:     "#6a737d",
@@ -67,7 +67,7 @@ var themes = []Theme{
 		BorderColor: "#d1d5da",
 	},
 	{
-		Name:        "Synthwave '84 (Rad Outrun Sunset)",
+		Name:        "Synthwave '84",
 		Correct:     "#39ff14",
 		Wrong:       "#ff007f",
 		Pending:     "#711c91",
@@ -112,6 +112,7 @@ type model struct {
 	height        int
 	currentScreen screen
 	selectedTheme int
+	tickID        int
 }
 
 func initialModel() model {
@@ -134,7 +135,9 @@ func initialModel() model {
 	}
 }
 
-type tickMsg struct{}
+type tickMsg struct {
+	ID int
+}
 
 func (m model) Init() tea.Cmd {
 	return nil
@@ -199,6 +202,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if !m.done && !m.typing {
 				m.startedAt = time.Now()
 				m.typing = true
+				m.tickID++
 				if len(msg.String()) == 1 {
 					m.userInput = append(m.userInput, []rune(msg.String())...)
 					m.cursorPos++
@@ -207,7 +211,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 
-				return m, tick()
+				return m, tick(m.tickID)
 			} else if m.typing && !m.done {
 				if len(msg.String()) == 1 {
 					m.userInput = append(m.userInput, []rune(msg.String())...)
@@ -222,6 +226,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tickMsg:
+		if m.tickID != msg.ID {
+			return m, nil
+		}
 		if m.done {
 			return m, nil
 		}
@@ -233,7 +240,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.wpm = calculateWPM(m.currentCount, m.duration, m.elapsed)
 			return m, nil
 		}
-		return m, tick()
+		return m, tick(m.tickID)
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
@@ -249,12 +256,15 @@ func (m model) restart_func() model {
 	rm.width = width
 	rm.height = height
 	rm.selectedTheme = m.selectedTheme
+	rm.tickID = m.tickID + 1
 	return rm
 }
 
-func tick() tea.Cmd {
+func tick(id int) tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg {
-		return tickMsg{}
+		return tickMsg{
+			ID: id,
+		}
 	})
 }
 

@@ -68,13 +68,14 @@ go build -o typing-test
 
 ## Controls
 
-| Key           | Action                    |
-| ------------- | ------------------------- |
-| Any character | Start or continue typing  |
-| Backspace     | Remove the last character |
-| Ctrl + R      | Restart the test          |
-| Esc           | Exit the application      |
-| Ctrl + C      | Exit the application      |
+| Key           | Action                      |
+| ------------- | --------------------------- |
+| Any character | Start or continue typing    |
+| Backspace     | Remove the last character   |
+| Ctrl + R      | Restart the test            |
+| Esc           | Exit the application        |
+| Ctrl + C      | Exit the application        |
+| Ctrl + T      | Open Theme Selection screen |
 
 ## Technologies Used
 
@@ -93,9 +94,9 @@ github.com/charmbracelet/lipgloss
 
 Some ideas for future development include:
 
-* Color Scheme
-* Randomized typing passages
-* Custom test durations
+- [x] Color Scheme
+- [ ] Randomized typing passages
+- [ ] Custom test durations
 
 ## License
 
